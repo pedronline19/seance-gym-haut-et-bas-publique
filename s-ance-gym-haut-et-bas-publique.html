@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>Séance Gym Haut et Bas — Publique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f5f4ef; --surface:#ffffff; --surface2:#eceae2; --text:#1b1d19; --dim:#5c6058;
+    --border:#d8d5c9; --accent:#d9480f; --accent-text:#ffffff; --green:#1e7a34; --green-bg:#e2f2e6;
+    --timer-bg:#1b1d19; --timer-text:#f5f4ef; --timer-dim:#b9bcb2;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#131511; --surface:#1d1f1b; --surface2:#262824; --text:#f0efe8; --dim:#a7aa9f;
+      --border:#383a35; --accent:#ff6b2c; --accent-text:#1b1005; --green:#4cc26b; --green-bg:#17301e;
+      --timer-bg:#000000; --timer-text:#f5f4ef; --timer-dim:#9a9d93;
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.45}
+  .cond{font-family:"Barlow Condensed","Barlow",sans-serif}
+  main{max-width:860px;margin:0 auto;padding:16px 16px 48px}
+  h1{font-family:"Barlow Condensed",sans-serif;font-size:2.5rem;line-height:1.02;font-weight:700;margin:6px 0 8px}
+  h2{font-family:"Barlow Condensed",sans-serif;font-size:1.9rem;font-weight:700;margin:0}
+  p{margin:0}
+  .kicker{font-family:"Barlow Condensed",sans-serif;font-size:1.05rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  .dim{color:var(--dim)}
+  /* ---- Minuteur de repos, toujours visible ---- */
+  .timer-hero{position:sticky;top:10px;z-index:30;background:var(--timer-bg);color:var(--timer-text);border-radius:18px;padding:16px 18px 14px;box-shadow:0 10px 30px rgba(0,0,0,.28)}
+  .timer-hero .label{font-family:"Barlow Condensed",sans-serif;font-size:1.05rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--timer-dim)}
+  .timer-hero .next{font-size:.95rem;color:var(--timer-dim)}
+  .timer-big{font-family:"Barlow Condensed",sans-serif;font-size:5.2rem;line-height:.95;font-weight:700;font-variant-numeric:tabular-nums}
+  .timer-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.16);overflow:hidden;margin:10px 0 12px}
+  .timer-bar>div{height:100%;background:var(--accent);width:0%;transition:width .5s linear}
+  .timer-hero.finished{outline:3px solid var(--green)}
+  .timer-hero.finished .timer-big{color:var(--green)}
+  .btnrow{display:flex;flex-wrap:wrap;gap:8px}
+  button{font-family:inherit;cursor:pointer}
+  .tbtn{min-height:48px;padding:8px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:var(--timer-text);font-weight:600;font-size:1rem}
+  .tbtn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;flex:1;min-width:130px}
+  @media (prefers-color-scheme: dark){ .tbtn.primary{color:#1b1005} }
+  /* ---- Cartes repères ---- */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0 4px}
+  @media (max-width:560px){ .cards{grid-template-columns:1fr} .timer-big{font-size:4.2rem} h1{font-size:2.1rem} }
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px}
+  .card .t{font-family:"Barlow Condensed",sans-serif;font-size:1.45rem;font-weight:700}
+  /* ---- Navigation vues ---- */
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 6px}
+  .tab{min-height:48px;padding:8px 20px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-weight:600;font-size:1.02rem}
+  .tab[aria-selected="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+  /* ---- Progression ---- */
+  .progress-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin:12px 0 4px}
+  .progress-bar{height:10px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-top:8px}
+  .progress-bar>div{height:100%;background:var(--green);width:0%;transition:width .4s}
+  /* ---- Exercices ---- */
+  section.day{margin-top:26px}
+  .day-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:3px solid var(--text);padding-bottom:8px;margin-bottom:14px}
+  .day-head .sub{color:var(--dim);font-weight:500}
+  .ex{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
+  .ex h3{font-family:"Barlow Condensed",sans-serif;font-size:1.55rem;font-weight:700;margin:0;line-height:1.1}
+  .muscle{color:var(--accent);font-weight:600;font-size:.95rem}
+  .meta{font-weight:700;margin-top:2px}
+  .detail{color:var(--dim);margin-top:6px}
+  .cue{margin-top:8px;background:var(--surface2);border-radius:10px;padding:10px 12px;font-size:.98rem}
+  .cue b{color:var(--accent)}
+  .sets{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+  .setrow{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:8px}
+  .setrow.done{background:var(--green-bg);border-color:var(--green)}
+  .setnum{width:44px;text-align:center;font-family:"Barlow Condensed",sans-serif;font-size:1.25rem;font-weight:700;flex-shrink:0}
+  .stepper{width:48px;height:48px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:1.4rem;font-weight:700;flex-shrink:0}
+  .reps{flex:1;min-width:56px;height:48px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);text-align:center;font-family:"Barlow Condensed",sans-serif;font-size:1.6rem;font-weight:600}
+  .unit{width:36px;font-size:.85rem;color:var(--dim);flex-shrink:0}
+  .donebtn{height:48px;padding:0 16px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-family:"Barlow Condensed",sans-serif;font-size:1.2rem;font-weight:700;flex-shrink:0}
+  @media (prefers-color-scheme: dark){ .donebtn{color:#1b1005} }
+  .setrow.done .donebtn{background:var(--green);color:#fff}
+  /* minuteur de durée */
+  .dur{margin-top:12px;background:var(--surface2);border-radius:12px;padding:12px}
+  .dur .big{font-family:"Barlow Condensed",sans-serif;font-size:3rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+  .dur .btnrow{margin-top:10px}
+  .dbtn{min-height:48px;padding:8px 18px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-weight:600}
+  .dbtn.primary{background:var(--accent);border-color:var(--accent);color:#fff;flex:1}
+  @media (prefers-color-scheme: dark){ .dbtn.primary{color:#1b1005} }
+  /* ---- Rapport Sheets ---- */
+  .sheetbox{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 16px;margin-top:14px}
+  .sheetbtn{min-height:52px;padding:10px 20px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-weight:700;font-size:1.02rem}
+  .sheetbtn.primary{background:var(--green);border-color:var(--green);color:#fff}
+  .sheetbtn:disabled{opacity:.45;cursor:not-allowed}
+  .tablewrap{overflow-x:auto;margin-top:14px;border:1px solid var(--border);border-radius:12px}
+  table{border-collapse:collapse;width:100%;font-size:.95rem;min-width:520px}
+  th{text-align:left;background:var(--surface2);padding:10px 12px;font-family:"Barlow Condensed",sans-serif;font-size:1.02rem;letter-spacing:.04em}
+  td{padding:9px 12px;border-top:1px solid var(--border)}
+  td.num,th.num{text-align:center;font-variant-numeric:tabular-nums}
+  .empty{padding:22px 16px;text-align:center;color:var(--dim)}
+  .feedback{margin-top:12px;font-weight:600;color:var(--green);min-height:1.4em}
+  .steps{margin:10px 0 0;padding-left:20px;color:var(--dim)}
+  .steps li{margin:4px 0}
+  footer{margin-top:34px;color:var(--dim);font-size:.92rem}
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+<main>
+  <p class="kicker">Objectif : prise de muscle · à la maison, sans équipement</p>
+  <h1>Séance complète — haut et bas ensemble</h1>
+  <p class="dim">Effort visé : 7 à 8 sur 10, avec 1 ou 2 répétitions encore possibles à la fin de chaque série. Si tu ressens une douleur vive, un vertige ou un malaise, arrête la séance.</p>
+
+  <div class="cards">
+    <div class="card"><p class="t">Lundi — Haut du corps</p><p class="dim">2 heures · push-ups, rowing, épaules, bras</p></div>
+    <div class="card"><p class="t">Mercredi — Bas du corps</p><p class="dim">3 heures · jambes et tronc, version maison</p></div>
+  </div>
+
+  <!-- Minuteur de repos -->
+  <div class="timer-hero" id="heroTimer" style="margin-top:16px">
+    <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap">
+      <div>
+        <p class="label" id="heroLabel">Minuteur de repos</p>
+        <p class="timer-big" id="heroTime">1:30</p>
+      </div>
+      <p class="next" id="heroNext">Choisis un repos ci-dessous, ou marque une série comme faite : le repos démarre tout seul.</p>
+    </div>
+    <div class="timer-bar"><div id="heroBar"></div></div>
+    <div class="btnrow" role="group" aria-label="Durées de repos">
+      <button class="tbtn" data-preset="60">1 min</button>
+      <button class="tbtn" data-preset="90">1 min 30</button>
+      <button class="tbtn" data-preset="120">2 min</button>
+      <button class="tbtn" data-preset="600">10 min</button>
+      <button class="tbtn" id="heroPlus">+10 s</button>
+    </div>
+    <div class="btnrow" style="margin-top:8px">
+      <button class="tbtn primary" id="heroToggle">Démarrer</button>
+      <button class="tbtn" id="heroReset">Réinitialiser</button>
+    </div>
+  </div>
+
+  <!-- Progression -->
+  <div class="progress-wrap" aria-live="polite">
+    <p><strong id="progText">0 série faite sur 44</strong> · <span id="progReps">0 répétitions rapportées</span></p>
+    <div class="progress-bar"><div id="progBar"></div></div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Vues de la séance">
+    <button class="tab" role="tab" data-view="tout" aria-selected="true">Tout</button>
+    <button class="tab" role="tab" data-view="haut" aria-selected="false">Haut — lundi</button>
+    <button class="tab" role="tab" data-view="bas" aria-selected="false">Bas — mercredi</button>
+    <button class="tab" role="tab" data-view="rapport" aria-selected="false">Rapport Sheets</button>
+  </div>
+
+  <div id="workoutView">
+    <section class="day" id="sec-haut">
+      <div class="day-head"><h2>Haut du corps</h2><span class="sub">Lundi · 2 heures · sans machine, sans bande, sans haltères</span></div>
+      <div id="list-haut"></div>
+    </section>
+    <section class="day" id="sec-bas">
+      <div class="day-head"><h2>Bas du corps</h2><span class="sub">Mercredi · 3 heures · jambes et tronc, version maison</span></div>
+      <div id="list-bas"></div>
+    </section>
+  </div>
+
+  <!-- Rapport pour Google Sheets -->
+  <div id="rapportView" class="hidden">
+    <div class="sheetbox">
+      <h2>Rapport pour Google Sheets</h2>
+      <p style="margin-top:6px">Chaque série que tu rapportes dans la séance apparaît ici, prête à passer dans Google Sheets. Exporte avant de fermer la page : c'est l'export qui fait ta sauvegarde.</p>
+      <ol class="steps">
+        <li><strong>Télécharger le CSV</strong>, puis dans Google Sheets : <em>Fichier → Importer → Téléverser</em>, et choisis le fichier.</li>
+        <li>Ou <strong>Copier pour Sheets</strong>, puis colle directement dans une cellule de ta feuille (Ctrl+V / Cmd+V) : les colonnes se placent toutes seules.</li>
+      </ol>
+      <div class="btnrow" style="margin-top:14px">
+        <button class="sheetbtn primary" id="btnCsv" disabled>Télécharger le CSV pour Sheets</button>
+        <button class="sheetbtn" id="btnCopy" disabled>Copier pour Sheets</button>
+        <button class="sheetbtn" id="btnClear" disabled>Tout effacer</button>
+      </div>
+      <p class="feedback" id="sheetFeedback" aria-live="polite"></p>
+      <div class="tablewrap">
+        <table aria-label="Séries rapportées">
+          <thead><tr>
+            <th>Date</th><th>Séance</th><th>Exercice</th><th class="num">Série</th><th class="num">Cible</th><th class="num">Reps faites</th><th class="num">Fait</th>
+          </tr></thead>
+          <tbody id="reportBody"></tbody>
+        </table>
+        <p class="empty" id="reportEmpty">Aucune série rapportée pour l'instant.<br>Va dans <strong>Haut</strong> ou <strong>Bas</strong>, note tes répétitions et appuie sur « Fait ».</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Progression simple : note tes séries et tes répétitions à chaque séance. Si tu réussis toutes tes séries à un effort sous 7, ajoute une répétition la semaine suivante. Toutes les 4 semaines, fais une semaine plus légère, une série de moins par exercice.</p>
+  </footer>
+</main>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- Programme (issu de ta séance) ---------- */
+var HAUT = [
+  {id:"echauffement-haut",section:"haut",name:"Échauffement",muscle:"Épaules et dos",kind:"duration",durationSec:600,
+   detail:"10 minutes : cardio léger sur place et mobilité des épaules et du dos.",
+   cue:"Respire, monte en température doucement. Ne force aucun étirement."},
+  {id:"push-ups",section:"haut",name:"Push-ups",muscle:"Poitrine · épaules · triceps",kind:"sets",sets:4,target:"8-12",targetLabel:"8 à 12 répétitions",restSec:90,
+   detail:"Ton choix à la place du développé couché. Mains sous les épaules, corps bien droit de la tête aux talons.",
+   cue:"Descends contrôlé, pousse fort. Garde 1 ou 2 répétitions en réserve (effort 7-8/10)."},
+  {id:"rowing-inverse",section:"haut",name:"Rowing inversé sous table",muscle:"Dos · biceps",kind:"sets",sets:4,target:"8-10",targetLabel:"8 à 10 répétitions",restSec:90,
+   detail:"Remplace le tirage vertical. Table solide testée avant, allongé dessous, mains sur le bord largeur des épaules, talons au sol.",
+   cue:"Tire ta poitrine vers la table, coudes vers le bas et l'arrière. Trop dur : plie les genoux. Trop facile : avance les pieds."},
+  {id:"pike-push-ups",section:"haut",name:"Pike push-ups",muscle:"Épaules",kind:"sets",sets:3,target:"10-12",targetLabel:"10 à 12 répétitions",restSec:90,
+   detail:"Version maison du développé épaules, sans haltères. Mains au sol, hanches bien hautes, corps en V à l'envers.",
+   cue:"Descends la tête vers le sol entre tes mains, puis pousse. Hanches toujours hautes."},
+  {id:"dips-chaise",section:"haut",name:"Dips sur chaise",muscle:"Triceps",kind:"sets",sets:3,target:"12-15",targetLabel:"12 à 15 répétitions",restSec:60,
+   detail:"Bras — partie triceps. Mains sur le bord d'une chaise solide derrière toi, jambes tendues ou pliées.",
+   cue:"Descends en pliant les coudes, remonte sans hausser les épaules. Chaise calée contre un mur."},
+  {id:"rowing-serre",section:"haut",name:"Rowing prise serrée",muscle:"Biceps · dos",kind:"sets",sets:3,target:"12-15",targetLabel:"12 à 15 répétitions",restSec:60,
+   detail:"Bras — partie biceps. Même position que le rowing inversé, mais prise serrée, paumes vers toi.",
+   cue:"Tire la poitrine vers la table en serrant les biceps en haut du mouvement."},
+  {id:"retour-calme-haut",section:"haut",name:"Retour au calme — Haut",muscle:"Étirements doux",kind:"duration",durationSec:600,
+   detail:"10 minutes d'étirements doux : poitrine, épaules, dos et bras.",
+   cue:"Doux, sans douleur. Respire lentement, 20 à 30 secondes par étirement."}
+];
+var BAS = [
+  {id:"echauffement-bas",section:"bas",name:"Échauffement",muscle:"Hanches et chevilles",kind:"duration",durationSec:600,
+   detail:"10 minutes (jusqu'à 15 si tu en as besoin) : cardio léger et mobilité des hanches et des chevilles.",
+   cue:"Squats légers, rotations de hanches, montées de genoux douces."},
+  {id:"squat",section:"bas",name:"Squat poids du corps",muscle:"Cuisses · fessiers",kind:"sets",sets:4,target:"8-10",targetLabel:"8 à 10 répétitions",restSec:120,
+   detail:"Version maison du squat, sans charge. Pieds largeur des épaules, talons au sol.",
+   cue:"Descends les hanches vers l'arrière et le bas, dos droit, genoux dans l'axe des pieds. Repos 90 secondes à 2 minutes."},
+  {id:"charniere-hanche",section:"bas",name:"Soulevé de terre roumain — maison",muscle:"Arrière des cuisses · fessiers · dos",kind:"sets",sets:4,target:"8-10",targetLabel:"8 à 10 répétitions",restSec:90,
+   detail:"Charnière de hanche sans charge : debout, genoux souples, hanches vers l'arrière, dos droit, puis pousse les hanches vers l'avant. Option : pont fessier au sol si le mouvement est nouveau.",
+   cue:"Le mouvement part des hanches, pas du dos. Dos toujours droit, descente lente."},
+  {id:"fentes",section:"bas",name:"Fentes",muscle:"Cuisses · fessiers",kind:"sets",sets:3,target:"10",targetLabel:"10 par jambe",restSec:90,
+   detail:"3 séries de 10 par jambe. Un grand pas en avant, descends droit, pousse dans le talon avant pour remonter.",
+   cue:"Torse droit, genou avant dans l'axe du pied. Appuie-toi à un mur au besoin pour l'équilibre."},
+  {id:"leg-curl-sol",section:"bas",name:"Leg curl au sol",muscle:"Arrière des cuisses",kind:"sets",sets:3,target:"12",targetLabel:"12 répétitions",restSec:60,
+   detail:"Version maison du leg curl : allongé sur le dos, talons sur une serviette qui glisse, tire les talons vers les fesses en levant les hanches.",
+   cue:"Hanches hautes pendant tout le mouvement, retour lent."},
+  {id:"leg-extension-assise",section:"bas",name:"Leg extension assise",muscle:"Quadriceps",kind:"sets",sets:3,target:"12",targetLabel:"12 répétitions",restSec:60,
+   detail:"Version maison du leg extension : assis sur une chaise, tends une jambe à l'horizontale, serre la cuisse 1 seconde, redescends lentement. Alterne les jambes.",
+   cue:"Mouvement lent, sans élan. Serre fort en haut."},
+  {id:"mollets",section:"bas",name:"Mollets debout",muscle:"Mollets",kind:"sets",sets:4,target:"15",targetLabel:"15 répétitions",restSec:60,
+   detail:"Debout, au bord d'une marche si tu en as une, monte sur la pointe des pieds puis redescends lentement.",
+   cue:"Pause d'une seconde en haut, descente lente jusqu'à l'étirement."},
+  {id:"planche",section:"bas",name:"Planche",muscle:"Tronc",kind:"sets",sets:3,target:"30-60",targetLabel:"30 à 60 secondes",unit:"sec",restSec:60,
+   detail:"Tronc : planche sur les avant-bras, corps droit de la tête aux talons. Note tes secondes dans le rapport, comme des répétitions.",
+   cue:"Ne laisse pas les hanches descendre. Respire, sans forcer le dos."},
+  {id:"crunch",section:"bas",name:"Crunch",muscle:"Tronc · abdominaux",kind:"sets",sets:3,target:"12-15",targetLabel:"12 à 15 répétitions",restSec:60,
+   detail:"Tronc : allongé sur le dos, genoux pliés, décolle les épaules en enroulant le buste.",
+   cue:"Petit mouvement contrôlé, sans tirer sur le cou et sans forcer le dos."},
+  {id:"retour-calme-bas",section:"bas",name:"Retour au calme — Bas",muscle:"Mobilité et étirements",kind:"duration",durationSec:600,
+   detail:"10 minutes : cardio très léger, mobilité et étirements des jambes et du tronc. 3 heures, c'est long : pauses et eau, pas besoin de pousser fort tout le long.",
+   cue:"Étire cuisses, fessiers, mollets et dos, en douceur."}
+];
+var ALL = HAUT.concat(BAS);
+var TOTAL_SETS = ALL.filter(function(e){return e.kind==="sets";}).reduce(function(a,e){return a+e.sets;},0);
+
+/* ---------- État (en mémoire, le temps de la page ouverte) ---------- */
+var logs = {}; // clé "exId-set" -> {reps: number|null, done: bool}
+
+function fmt(sec){ sec=Math.max(0,Math.floor(sec)); var m=Math.floor(sec/60), r=sec%60; return m+":"+(r<10?"0":"")+r; }
+function todayStr(){
+  try{ return new Intl.DateTimeFormat("fr-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date()); }
+  catch(e){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+}
+function beep(){
+  try{
+    var Ctx = window.AudioContext || window.webkitAudioContext; if(!Ctx) return;
+    var ctx = new Ctx();
+    [0,0.25,0.5].forEach(function(delay){
+      var o=ctx.createOscillator(), g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value=880; g.gain.value=0.16;
+      o.start(ctx.currentTime+delay); o.stop(ctx.currentTime+delay+0.18);
+    });
+    if(navigator.vibrate) navigator.vibrate([200,100,200]);
+  }catch(e){}
+}
+
+/* ---------- Minuteur de repos (héros) ---------- */
+var hero = { total:90, remaining:90, running:false, finished:false, label:"Minuteur de repos", next:"", interval:null };
+var heroEl = document.getElementById("heroTimer");
+var heroTime = document.getElementById("heroTime");
+var heroLabel = document.getElementById("heroLabel");
+var heroNext = document.getElementById("heroNext");
+var heroBar = document.getElementById("heroBar");
+var heroToggle = document.getElementById("heroToggle");
+
+function heroRender(){
+  heroTime.textContent = fmt(hero.remaining);
+  heroLabel.textContent = hero.label;
+  heroNext.textContent = hero.finished ? "Temps écoulé — au travail !" : (hero.next || "Choisis un repos ci-dessous, ou marque une série comme faite : le repos démarre tout seul.");
+  heroBar.style.width = (hero.total>0 ? ((hero.total-hero.remaining)/hero.total)*100 : 0) + "%";
+  heroToggle.textContent = hero.running ? "Pause" : (hero.remaining<hero.total && hero.remaining>0 ? "Reprendre" : "Démarrer");
+  heroEl.classList.toggle("finished", hero.finished);
+}
+function heroStop(){ if(hero.interval){ clearInterval(hero.interval); hero.interval=null; } hero.running=false; }
+function heroStart(total, label, next, auto){
+  heroStop();
+  hero.total=total; hero.remaining=total; hero.label=label; hero.next=next||""; hero.finished=false;
+  if(auto){
+    hero.running=true;
+    hero.interval=setInterval(function(){
+      hero.remaining--;
+      if(hero.remaining<=0){ hero.remaining=0; heroStop(); hero.finished=true; beep(); }
+      heroRender();
+    },1000);
+  }
+  heroRender();
+}
+heroToggle.addEventListener("click", function(){
+  if(hero.running){ heroStop(); heroRender(); return; }
+  if(hero.remaining===0){ hero.remaining=hero.total; hero.finished=false; }
+  heroStart(hero.remaining===hero.total?hero.total:hero.total, hero.label, hero.next, true);
+  // repartir proprement depuis le temps restant
+  heroStop(); hero.running=true; hero.finished=false;
+  hero.interval=setInterval(function(){
+    hero.remaining--;
+    if(hero.remaining<=0){ hero.remaining=0; heroStop(); hero.finished=true; beep(); }
+    heroRender();
+  },1000);
+  heroRender();
+});
+document.getElementById("heroReset").addEventListener("click", function(){ heroStop(); hero.remaining=hero.total; hero.finished=false; heroRender(); });
+document.getElementById("heroPlus").addEventListener("click", function(){ hero.remaining+=10; hero.total=Math.max(hero.total, hero.remaining); hero.finished=false; heroRender(); });
+Array.prototype.forEach.call(document.querySelectorAll("[data-preset]"), function(b){
+  b.addEventListener("click", function(){
+    var s=parseInt(b.getAttribute("data-preset"),10);
+    heroStart(s, s>=600 ? "Minuteur — 10 minutes" : "Minuteur de repos", "", false);
+  });
+});
+heroRender();
+
+/* ---------- Rendu des exercices ---------- */
+function buildDuration(ex){
+  var wrap=document.createElement("div"); wrap.className="dur";
+  var remaining=ex.durationSec, running=false, finished=false, interval=null;
+  wrap.innerHTML='<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px"><span class="big"></span><span class="dim">sur '+fmt(ex.durationSec)+'</span></div>'+
+    '<p class="dur-msg" style="font-weight:600;color:var(--green);min-height:1.3em"></p>'+
+    '<div class="btnrow"><button class="dbtn primary" type="button"></button><button class="dbtn reset" type="button">Réinitialiser</button><button class="dbtn" type="button">+1 min</button></div>';
+  var big=wrap.querySelector(".big"), msg=wrap.querySelector(".dur-msg"),
+      mainBtn=wrap.querySelector(".dbtn.primary"), resetBtn=wrap.querySelector(".reset"), plusBtn=wrap.querySelectorAll(".dbtn")[2];
+  function render(){ big.textContent=fmt(remaining); mainBtn.textContent = running ? "Pause" : (remaining<ex.durationSec && remaining>0 ? "Reprendre" : "Démarrer le minuteur"); msg.textContent = finished ? "Temps écoulé — c'est fait ✓" : ""; }
+  function stop(){ if(interval){clearInterval(interval); interval=null;} running=false; }
+  mainBtn.addEventListener("click", function(){
+    if(running){ stop(); render(); return; }
+    if(remaining===0){ remaining=ex.durationSec; finished=false; }
+    running=true;
+    interval=setInterval(function(){
+      remaining--;
+      if(remaining<=0){ remaining=0; stop(); finished=true; beep(); }
+      render();
+    },1000);
+    render();
+  });
+  resetBtn.addEventListener("click", function(){ stop(); remaining=ex.durationSec; finished=false; render(); });
+  plusBtn.addEventListener("click", function(){ remaining+=60; render(); });
+  render();
+  return wrap;
+}
+
+function buildExercise(ex){
+  var card=document.createElement("article"); card.className="ex";
+  var head='<h3>'+ex.name+'</h3><p class="muscle">'+ex.muscle+'</p>';
+  if(ex.kind==="sets"){ head+='<p class="meta">'+ex.sets+' séries · '+ex.targetLabel+' · repos '+fmt(ex.restSec)+'</p>'; }
+  else { head+='<p class="meta">'+(ex.durationSec/60)+' minutes</p>'; }
+  head+='<p class="detail">'+ex.detail+'</p><p class="cue"><b>Repère :</b> '+ex.cue+'</p>';
+  card.innerHTML=head;
+  if(ex.kind==="duration"){ card.appendChild(buildDuration(ex)); return card; }
+
+  var setsWrap=document.createElement("div"); setsWrap.className="sets";
+  for(var s=1; s<=ex.sets; s++){ setsWrap.appendChild(buildSetRow(ex, s)); }
+  card.appendChild(setsWrap);
+  return card;
+}
+
+function buildSetRow(ex, setNumber){
+  var key=ex.id+"-"+setNumber;
+  var row=document.createElement("div"); row.className="setrow"; row.id="row-"+key;
+  var unit=ex.unit||"reps";
+  row.innerHTML='<span class="setnum">S'+setNumber+'</span>'+
+    '<button class="stepper" type="button" aria-label="Enlever une répétition, série '+setNumber+' de '+ex.name+'">−</button>'+
+    '<label style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)" for="in-'+key+'">Répétitions faites, série '+setNumber+' de '+ex.name+'</label>'+
+    '<input class="reps" id="in-'+key+'" inputmode="numeric" pattern="[0-9]*" placeholder="'+ex.target+'" aria-label="Répétitions faites série '+setNumber+' de '+ex.name+'">'+
+    '<span class="unit">'+unit+'</span>'+
+    '<button class="stepper" type="button" aria-label="Ajouter une répétition, série '+setNumber+' de '+ex.name+'">+</button>'+
+    '<button class="donebtn" type="button" aria-pressed="false">Fait</button>';
+  var input=row.querySelector(".reps"), minus=row.querySelectorAll(".stepper")[0], plus=row.querySelectorAll(".stepper")[1], doneBtn=row.querySelector(".donebtn");
+
+  function currentReps(){ var v=input.value.trim(); return v===""?null:Math.max(0,Math.min(999,parseInt(v,10)||0)); }
+  function sync(){
+    var log=logs[key];
+    var done=log && log.done;
+    row.classList.toggle("done", !!done);
+    doneBtn.textContent = done ? "Fait ✓" : "Fait";
+    doneBtn.setAttribute("aria-pressed", done?"true":"false");
+  }
+  minus.addEventListener("click", function(){ input.value=String(Math.max(0,(parseInt(input.value||"0",10)||0)-1)); save(false); });
+  plus.addEventListener("click", function(){ input.value=String((parseInt(input.value||"0",10)||0)+1); save(false); });
+  input.addEventListener("change", function(){ save(false); });
+  function save(startRest){
+    var prev=logs[key];
+    var wasDone=prev && prev.done;
+    logs[key]={ reps: currentReps(), done: prev ? prev.done : false };
+    if(startRest!==undefined && startRest!==false){ /* noop */ }
+    updateProgress(); renderReport(); sync();
+    return wasDone;
+  }
+  doneBtn.addEventListener("click", function(){
+    var prev=logs[key];
+    var nowDone=!(prev && prev.done);
+    logs[key]={ reps: currentReps(), done: nowDone };
+    sync(); updateProgress(); renderReport();
+    if(nowDone){
+      var nextLabel;
+      if(setNumber < ex.sets){ nextLabel="Série "+(setNumber+1)+" de "+ex.name; }
+      else{
+        var idx=ALL.indexOf(ex), nextEx=null;
+        for(var i=idx+1;i<ALL.length;i++){ if(ALL[i].kind==="sets"){ nextEx=ALL[i]; break; } }
+        nextLabel = nextEx ? "Prochain exercice : "+nextEx.name : "Dernier exercice — retour au calme";
+      }
+      heroStart(ex.restSec||90, "Repos — "+ex.name, "Prochain : "+nextLabel, true);
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+  });
+  sync();
+  return row;
+}
+
+HAUT.forEach(function(ex){ document.getElementById("list-haut").appendChild(buildExercise(ex)); });
+BAS.forEach(function(ex){ document.getElementById("list-bas").appendChild(buildExercise(ex)); });
+
+/* ---------- Progression + rapport ---------- */
+function reportRows(){
+  var rows=[];
+  ALL.forEach(function(ex){
+    if(ex.kind!=="sets") return;
+    for(var s=1;s<=ex.sets;s++){
+      var log=logs[ex.id+"-"+s];
+      if(log && (log.done || log.reps!==null)){
+        rows.push({
+          date: todayStr(),
+          seance: ex.section==="haut" ? "Haut — lundi" : "Bas — mercredi",
+          exercice: ex.name, serie: s, cible: ex.target,
+          reps: log.reps===null ? "" : log.reps, fait: log.done ? "Oui" : "Non",
+          rest: ex.restSec||""
+        });
+      }
+    }
+  });
+  return rows;
+}
+function updateProgress(){
+  var done=0, reps=0;
+  Object.keys(logs).forEach(function(k){ if(logs[k].done) done++; if(logs[k].reps) reps+=logs[k].reps; });
+  document.getElementById("progText").textContent = done+" série"+(done>1?"s":"")+" faite"+(done>1?"s":"")+" sur "+TOTAL_SETS;
+  document.getElementById("progReps").textContent = reps+" répétition"+(reps>1?"s":"")+" rapportée"+(reps>1?"s":"");
+  document.getElementById("progBar").style.width = (TOTAL_SETS? (done/TOTAL_SETS)*100 : 0)+"%";
+}
+var HEADERS=["Date","Séance","Exercice","Série","Cible","Reps faites","Fait","Repos (s)"];
+function renderReport(){
+  var rows=reportRows();
+  var body=document.getElementById("reportBody");
+  body.innerHTML="";
+  rows.forEach(function(r){
+    var tr=document.createElement("tr");
+    [r.date,r.seance,r.exercice].forEach(function(v){ var td=document.createElement("td"); td.textContent=v; tr.appendChild(td); });
+    [r.serie,r.cible,r.reps,r.fait].forEach(function(v){ var td=document.createElement("td"); td.className="num"; td.textContent=v; tr.appendChild(td); });
+    body.appendChild(tr);
+  });
+  document.getElementById("reportEmpty").style.display = rows.length? "none":"block";
+  var has=rows.length>0;
+  document.getElementById("btnCsv").disabled=!has;
+  document.getElementById("btnCopy").disabled=!has;
+  document.getElementById("btnClear").disabled=!has && Object.keys(logs).length===0;
+}
+function feedback(msg){ document.getElementById("sheetFeedback").textContent=msg; }
+
+function csvCell(v){ v=String(v==null?"":v); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; }
+document.getElementById("btnCsv").addEventListener("click", function(){
+  var rows=reportRows(); if(!rows.length) return;
+  var lines=[HEADERS.join(",")];
+  rows.forEach(function(r){ lines.push([r.date,r.seance,r.exercice,r.serie,r.cible,r.reps,r.fait,r.rest].map(csvCell).join(",")); });
+  var blob=new Blob(["\ufeff"+lines.join("\r\n")], {type:"text/csv;charset=utf-8"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="seance-gym-"+todayStr()+".csv";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+  feedback("Fichier CSV téléchargé ("+rows.length+" séries). Importe-le dans Google Sheets : Fichier → Importer → Téléverser.");
+});
+document.getElementById("btnCopy").addEventListener("click", function(){
+  var rows=reportRows(); if(!rows.length) return;
+  var lines=[HEADERS.join("\t")];
+  rows.forEach(function(r){ lines.push([r.date,r.seance,r.exercice,r.serie,r.cible,r.reps,r.fait,r.rest].join("\t")); });
+  var text=lines.join("\n");
+  function ok(){ feedback("Copié ("+rows.length+" séries). Ouvre ta feuille Google Sheets, clique une cellule et colle (Ctrl+V / Cmd+V)."); }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(ok, function(){ fallback(); });
+  } else fallback();
+  function fallback(){
+    var ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); ok(); }catch(e){ feedback("Copie automatique impossible sur ce navigateur — utilise le téléchargement CSV."); }
+    document.body.removeChild(ta);
+  }
+});
+document.getElementById("btnClear").addEventListener("click", function(){
+  logs={};
+  Array.prototype.forEach.call(document.querySelectorAll(".reps"), function(i){ i.value=""; });
+  Array.prototype.forEach.call(document.querySelectorAll(".setrow"), function(r){ r.classList.remove("done"); });
+  Array.prototype.forEach.call(document.querySelectorAll(".donebtn"), function(b){ b.textContent="Fait"; b.setAttribute("aria-pressed","false"); });
+  updateProgress(); renderReport();
+  feedback("Rapport effacé. La séance repart à zéro.");
+});
+updateProgress(); renderReport();
+
+/* ---------- Vues ---------- */
+Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(tab){
+  tab.addEventListener("click", function(){
+    Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(t){ t.setAttribute("aria-selected","false"); });
+    tab.setAttribute("aria-selected","true");
+    var v=tab.getAttribute("data-view");
+    var isReport = v==="rapport";
+    document.getElementById("rapportView").classList.toggle("hidden", !isReport);
+    document.getElementById("workoutView").classList.toggle("hidden", isReport);
+    if(!isReport){
+      document.getElementById("sec-haut").classList.toggle("hidden", v==="bas");
+      document.getElementById("sec-bas").classList.toggle("hidden", v==="haut");
+    }
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+});
+})();
+</script>
+</body>
+</html>
