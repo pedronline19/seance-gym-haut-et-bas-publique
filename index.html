@@ -50,7 +50,7 @@
   .cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0 4px}
   @media (max-width:560px){ .cards{grid-template-columns:1fr} .timer-big{font-size:4.2rem} h1{font-size:2.1rem} }
   .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px}
-  .card .t{font-family:"Barlow Condensed",sans-serif;font-size:1.45rem;font-weight:700}
+  .rulebox{background:var(--green-bg);border:1px solid var(--green);border-radius:14px;padding:14px 16px;margin:16px 0 4px}.rulebox h2{color:var(--green);font-size:1.45rem;margin:0 0 6px}.card .t{font-family:"Barlow Condensed",sans-serif;font-size:1.45rem;font-weight:700}
   /* ---- Navigation vues ---- */
   .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 6px}
   .tab{min-height:48px;padding:8px 20px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-weight:600;font-size:1.02rem}
@@ -116,7 +116,7 @@
     <div class="card"><p class="t">Mercredi — Bas du corps</p><p class="dim">3 heures · jambes et tronc, version maison</p></div>
   </div>
 
-  <!-- Minuteur de repos -->
+  <div class="rulebox"><h2>Règle des 30 minutes</h2><p>Si tu termines la séance en dedans de 30 minutes, refais-la au complet : 2 fois au total, ou 3 fois au total, avec les mêmes exercices et les mêmes repos, pour avoir assez de volume.</p></div><!-- Minuteur de repos -->
   <div class="timer-hero" id="heroTimer" style="margin-top:16px">
     <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-end;flex-wrap:wrap">
       <div>
@@ -192,7 +192,7 @@
 
   <footer>
     <p>Progression simple : note tes séries et tes répétitions à chaque séance. Si tu réussis toutes tes séries à un effort sous 7, ajoute une répétition la semaine suivante. Toutes les 4 semaines, fais une semaine plus légère, une série de moins par exercice.</p>
-  </footer>
+  <p>Règle des 30 minutes : si la séance est faite en dedans de 30 minutes, refais-la 2 fois ou 3 fois au total, avec les mêmes exercices et les mêmes repos.</p></footer>
 </main>
 
 <script>
@@ -210,7 +210,7 @@ var HAUT = [
   {id:"rowing-inverse",section:"haut",name:"Rowing inversé sous table",muscle:"Dos · biceps",kind:"sets",sets:4,target:"8-10",targetLabel:"8 à 10 répétitions",restSec:90,
    detail:"Remplace le tirage vertical. Table solide testée avant, allongé dessous, mains sur le bord largeur des épaules, talons au sol.",
    cue:"Tire ta poitrine vers la table, coudes vers le bas et l'arrière. Trop dur : plie les genoux. Trop facile : avance les pieds."},
-  {id:"pike-push-ups",section:"haut",name:"Pike push-ups",muscle:"Épaules",kind:"sets",sets:3,target:"10-12",targetLabel:"10 à 12 répétitions",restSec:90,
+  {id:"pike-push-ups",section:"haut",name:"Pike push-ups",muscle:"Épaules",kind:"sets",sets:3,target:"10-12",targetLabel:"10 à 12 répétitions",restSec:90,restLabel:"1 min à 1 min 30",
    detail:"Version maison du développé épaules, sans haltères. Mains au sol, hanches bien hautes, corps en V à l'envers.",
    cue:"Descends la tête vers le sol entre tes mains, puis pousse. Hanches toujours hautes."},
   {id:"dips-chaise",section:"haut",name:"Dips sur chaise",muscle:"Triceps",kind:"sets",sets:3,target:"12-15",targetLabel:"12 à 15 répétitions",restSec:60,
@@ -218,29 +218,29 @@ var HAUT = [
    cue:"Descends en pliant les coudes, remonte sans hausser les épaules. Chaise calée contre un mur."},
   {id:"rowing-serre",section:"haut",name:"Rowing prise serrée",muscle:"Biceps · dos",kind:"sets",sets:3,target:"12-15",targetLabel:"12 à 15 répétitions",restSec:60,
    detail:"Bras — partie biceps. Même position que le rowing inversé, mais prise serrée, paumes vers toi.",
-   cue:"Tire la poitrine vers la table en serrant les biceps en haut du mouvement."},
+   cue:"Tire la poitrine vers la table en serrant les biceps en haut du mouvement."},{id:"pompes-diamant",section:"haut",name:"Pompes diamant",muscle:"Triceps · poitrine",kind:"sets",sets:3,target:"8-12",targetLabel:"8 à 12 répétitions",restSec:90,restLabel:"1 min à 1 min 30",detail:"Mains sous la poitrine, pouces et index qui se touchent pour former un diamant, corps bien droit de la tête aux talons.",cue:"Descends en gardant les coudes près du corps, pousse fort. Trop dur : fais-les sur les genoux."},{id:"pompes-larges",section:"haut",name:"Pompes larges",muscle:"Poitrine · épaules",kind:"sets",sets:3,target:"10-15",targetLabel:"10 à 15 répétitions",restSec:90,restLabel:"1 min à 1 min 30",detail:"Mains plus larges que les épaules, corps bien droit de la tête aux talons, doigts vers l'avant.",cue:"Descends contrôlé jusqu'à sentir l'étirement de la poitrine, pousse sans creuser le bas du dos."},{id:"superman-sol",section:"haut",name:"Superman au sol",muscle:"Dos · fessiers",kind:"sets",sets:3,target:"12-15",targetLabel:"12 à 15 répétitions",restSec:60,detail:"Allongé sur le ventre, bras tendus devant toi, décolle en même temps les bras, la poitrine et les jambes du sol.",cue:"Lève doucement, tiens 1 seconde en haut en serrant le dos et les fessiers, redescends lentement."},
   {id:"retour-calme-haut",section:"haut",name:"Retour au calme — Haut",muscle:"Étirements doux",kind:"duration",durationSec:600,
    detail:"10 minutes d'étirements doux : poitrine, épaules, dos et bras.",
    cue:"Doux, sans douleur. Respire lentement, 20 à 30 secondes par étirement."}
 ];
 var BAS = [
-  {id:"echauffement-bas",section:"bas",name:"Échauffement",muscle:"Hanches et chevilles",kind:"duration",durationSec:600,
-   detail:"10 minutes (jusqu'à 15 si tu en as besoin) : cardio léger et mobilité des hanches et des chevilles.",
+  {id:"echauffement-bas",section:"bas",name:"Échauffement",muscle:"Hanches et chevilles",kind:"duration",durationSec:600,durationLabel:"10 à 15 minutes",
+   detail:"10 à 15 minutes : cardio léger et mobilité des hanches et des chevilles. Le minuteur est réglé à 10 minutes.",
    cue:"Squats légers, rotations de hanches, montées de genoux douces."},
-  {id:"squat",section:"bas",name:"Squat poids du corps",muscle:"Cuisses · fessiers",kind:"sets",sets:4,target:"8-10",targetLabel:"8 à 10 répétitions",restSec:120,
+  {id:"squat",section:"bas",name:"Squat poids du corps",muscle:"Cuisses · fessiers",kind:"sets",sets:4,target:"8-10",targetLabel:"8 à 10 répétitions",restSec:120,restLabel:"1 min 30 à 2 min",
    detail:"Version maison du squat, sans charge. Pieds largeur des épaules, talons au sol.",
    cue:"Descends les hanches vers l'arrière et le bas, dos droit, genoux dans l'axe des pieds. Repos 90 secondes à 2 minutes."},
   {id:"charniere-hanche",section:"bas",name:"Soulevé de terre roumain — maison",muscle:"Arrière des cuisses · fessiers · dos",kind:"sets",sets:4,target:"8-10",targetLabel:"8 à 10 répétitions",restSec:90,
    detail:"Charnière de hanche sans charge : debout, genoux souples, hanches vers l'arrière, dos droit, puis pousse les hanches vers l'avant. Option : pont fessier au sol si le mouvement est nouveau.",
    cue:"Le mouvement part des hanches, pas du dos. Dos toujours droit, descente lente."},
-  {id:"fentes",section:"bas",name:"Fentes",muscle:"Cuisses · fessiers",kind:"sets",sets:3,target:"10",targetLabel:"10 par jambe",restSec:90,
+  {id:"fentes",section:"bas",name:"Fentes",muscle:"Cuisses · fessiers",kind:"sets",sets:3,target:"10",targetLabel:"10 par jambe",restSec:90,restLabel:"1 min à 1 min 30",
    detail:"3 séries de 10 par jambe. Un grand pas en avant, descends droit, pousse dans le talon avant pour remonter.",
    cue:"Torse droit, genou avant dans l'axe du pied. Appuie-toi à un mur au besoin pour l'équilibre."},
   {id:"leg-curl-sol",section:"bas",name:"Leg curl au sol",muscle:"Arrière des cuisses",kind:"sets",sets:3,target:"12",targetLabel:"12 répétitions",restSec:60,
    detail:"Version maison du leg curl : allongé sur le dos, talons sur une serviette qui glisse, tire les talons vers les fesses en levant les hanches.",
    cue:"Hanches hautes pendant tout le mouvement, retour lent."},
-  {id:"leg-extension-assise",section:"bas",name:"Leg extension assise",muscle:"Quadriceps",kind:"sets",sets:3,target:"12",targetLabel:"12 répétitions",restSec:60,
-   detail:"Version maison du leg extension : assis sur une chaise, tends une jambe à l'horizontale, serre la cuisse 1 seconde, redescends lentement. Alterne les jambes.",
+  {id:"leg-extension-assise",section:"bas",name:"Leg extension au sol",muscle:"Quadriceps",kind:"sets",sets:3,target:"12",targetLabel:"12 répétitions",restSec:60,
+   detail:"Version maison du leg extension, au sol ou assis sur une chaise : tends une jambe à l'horizontale, serre la cuisse 1 seconde, redescends lentement. Alterne les jambes.",
    cue:"Mouvement lent, sans élan. Serre fort en haut."},
   {id:"mollets",section:"bas",name:"Mollets debout",muscle:"Mollets",kind:"sets",sets:4,target:"15",targetLabel:"15 répétitions",restSec:60,
    detail:"Debout, au bord d'une marche si tu en as une, monte sur la pointe des pieds puis redescends lentement.",
@@ -250,7 +250,7 @@ var BAS = [
    cue:"Ne laisse pas les hanches descendre. Respire, sans forcer le dos."},
   {id:"crunch",section:"bas",name:"Crunch",muscle:"Tronc · abdominaux",kind:"sets",sets:3,target:"12-15",targetLabel:"12 à 15 répétitions",restSec:60,
    detail:"Tronc : allongé sur le dos, genoux pliés, décolle les épaules en enroulant le buste.",
-   cue:"Petit mouvement contrôlé, sans tirer sur le cou et sans forcer le dos."},
+   cue:"Petit mouvement contrôlé, sans tirer sur le cou et sans forcer le dos."},{id:"squat-bulgare",section:"bas",name:"Squat bulgare sur chaise",muscle:"Cuisses · fessiers",kind:"sets",sets:3,target:"10",targetLabel:"10 par jambe",restSec:90,restLabel:"1 min à 1 min 30",detail:"Un pied au sol, le dessus de l'autre pied posé sur une chaise solide derrière toi. Descends droit sur la jambe avant, puis pousse dans le talon pour remonter. Fais toutes les répétitions d'un côté, puis change de jambe.",cue:"Torse droit, genou avant dans l'axe du pied. Chaise calée contre un mur, appuie-toi au besoin pour l'équilibre."},{id:"pont-fessier",section:"bas",name:"Pont fessier au sol",muscle:"Fessiers · arrière des cuisses",kind:"sets",sets:4,target:"12-15",targetLabel:"12 à 15 répétitions",restSec:60,detail:"Allongé sur le dos, genoux pliés, pieds à plat au sol près des fesses, bras le long du corps. Pousse dans les talons pour lever les hanches jusqu'à aligner genoux, hanches et épaules.",cue:"Serre fort les fessiers 1 seconde en haut, redescends lentement sans poser complètement les hanches entre les répétitions."},{id:"step-up",section:"bas",name:"Step-up sur chaise",muscle:"Cuisses · fessiers",kind:"sets",sets:3,target:"10",targetLabel:"10 par jambe",restSec:90,restLabel:"1 min à 1 min 30",detail:"Devant une chaise solide calée contre un mur : pose tout le pied sur l'assise, pousse dans le talon pour monter debout sur la chaise, puis redescends lentement. Fais toutes les répétitions d'une jambe, puis change.",cue:"Monte avec la force de la jambe du haut, pas en poussant avec le pied du bas. Genou dans l'axe du pied, descente contrôlée."},
   {id:"retour-calme-bas",section:"bas",name:"Retour au calme — Bas",muscle:"Mobilité et étirements",kind:"duration",durationSec:600,
    detail:"10 minutes : cardio très léger, mobilité et étirements des jambes et du tronc. 3 heures, c'est long : pauses et eau, pas besoin de pousser fort tout le long.",
    cue:"Étire cuisses, fessiers, mollets et dos, en douceur."}
@@ -365,8 +365,8 @@ function buildDuration(ex){
 function buildExercise(ex){
   var card=document.createElement("article"); card.className="ex";
   var head='<h3>'+ex.name+'</h3><p class="muscle">'+ex.muscle+'</p>';
-  if(ex.kind==="sets"){ head+='<p class="meta">'+ex.sets+' séries · '+ex.targetLabel+' · repos '+fmt(ex.restSec)+'</p>'; }
-  else { head+='<p class="meta">'+(ex.durationSec/60)+' minutes</p>'; }
+  if(ex.kind==="sets"){ head+='<p class="meta">'+ex.sets+' séries · '+ex.targetLabel+' · repos '+(ex.restLabel||fmt(ex.restSec))+'</p>'; }
+  else { head+='<p class="meta">'+(ex.durationLabel||((ex.durationSec/60)+' minutes'))+'</p>'; }
   head+='<p class="detail">'+ex.detail+'</p><p class="cue"><b>Repère :</b> '+ex.cue+'</p>';
   card.innerHTML=head;
   if(ex.kind==="duration"){ card.appendChild(buildDuration(ex)); return card; }
